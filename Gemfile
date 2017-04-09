@@ -5,10 +5,13 @@ gem 'puma'
 gem 'sinatra'
 gem 'dotenv'
 gem 'celluloid-io'
+gem 'httparty'
 
 group :development, :test do
   gem 'rake'
   gem 'foreman'
+  gem 'pry', '~> 0.10.4'
+	gem 'byebug'
 end
 
 group :test do

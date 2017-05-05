@@ -5,9 +5,6 @@ Dotenv.load
 
 require 'slack-bot'
 require 'web'
-require 'httparty'
-require 'octokit'
-require 'pry'
 
 Thread.abort_on_exception = true
 

@@ -1,4 +1,7 @@
 require 'slack-ruby-bot'
-require 'slack-bot/commands/reddit'
-require 'slack-bot/commands/github'
+require 'httparty'
+require 'octokit'
+require 'pry'
+
+require 'slack-bot/commands'
 require 'slack-bot/bot'

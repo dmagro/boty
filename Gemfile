@@ -6,6 +6,7 @@ gem 'sinatra'
 gem 'dotenv'
 gem 'celluloid-io'
 gem 'httparty'
+gem "octokit", "~> 4.0"
 
 group :development, :test do
   gem 'rake'

@@ -23,9 +23,8 @@ module SlackBot
           command = command_input.first
           arguments = command_input[1..-1]
           case command
-          when 'repo'
-            @github_client
-            'repos'
+          when 'repos'
+            @github_client.repositories
           when 'branch'
             @github_client
             'branch'
@@ -35,6 +34,10 @@ module SlackBot
           when 'pr'
             @github_client
             'prs'
+          when 'prs'
+            repo_name = arguments.first
+            state = arguments.second
+            @github_client.pull_requests(repo_name, state)
           else
             "Yeah... you know... I didn't get what you want, sorry about that"
           end

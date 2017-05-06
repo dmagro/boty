@@ -32,6 +32,34 @@ module SlackBot
 				"Can't find that repo..."
 			end
 
+			def create_pr(repo_name, base, branch, title, body=nil)
+				repo = repo(repo_name)
+				pull_request = @client.create_pull_request(repo, base, branch, title, body)
+				pull_request_text(repo, pull_request)
+			rescue Octokit::NotFound, Octokit::InvalidRepository
+				"Can't find that repo..."
+			rescue Octokit::UnprocessableEntity => e
+				pull_request_errors(e.errors.first)
+			end
+
+			def merge_pr(repo_name, pr_number)
+				repo = repo(repo_name)
+				response = @client.merge_pull_request(repo, pr_number)
+				"#{response[:message]} with sha: #{response[:sha]}"
+			rescue Octokit::NotFound
+				"Can't find repo or pull request..."
+			end
+
+			def close_pr(repo_name, pr_number)
+				repo = repo(repo_name)
+				pull_request = @client.close_pull_request(repo, pr_number)
+				"#{pull_request_text(repo, pull_request)} \n Pull Request is Closed"
+			rescue Octokit::NotFound
+				"Can't find repo or pull request..."
+			rescue Octokit::InvalidRepository
+				"Invalid repo..."
+			end
+
 			private
 			def list_repositories(repositories)
 				list = repositories.map do |r| 
@@ -54,7 +82,7 @@ module SlackBot
 			end
 
 			def pull_request_text(repo, pr)
-				"<#{pr[:html_url]}|#{pr[:title]}> #{pr[:user][:login]} (#{pr[:state]})" +
+				"##{pr[:number]} - <#{pr[:html_url]}|#{pr[:title]}> #{pr[:user][:login]} (#{pr[:state]})" +
 				"\n\t Labels: #{issue_labels(repo, pr[:number])}"+
 				"\n\t Description: \n\t #{pr[:body][0..80].split("\n").join("\n\t\t")}" + 
 				"\n\t Last Commit: #{commit_text(pr_commits(repo, pr[:number]).last)}"
@@ -80,6 +108,17 @@ module SlackBot
 
 			def repo(repo_name)
 				"#{ENV['GITHUB_USERNAME']}/#{repo_name}"
+			end
+
+			def pull_request_errors(error)
+				case error[:field]
+				when "base"
+					"Can't find this base_branch"
+				when "head"
+					"Can't find this feature_branch"
+				else
+					error[:message]
+				end
 			end
 		end
 	end

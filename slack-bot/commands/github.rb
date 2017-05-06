@@ -31,13 +31,29 @@ module SlackBot
           when 'branches'
             repo_name = arguments.first
             @github_client.branches(repo_name)
-          when 'pr'
-            @github_client
-            'prs'
           when 'prs'
-            repo_name = arguments.first
-            state = arguments.second
+            repo_name = arguments[0]
+            state = arguments[1]
             @github_client.pull_requests(repo_name, state)
+          when 'create_pr'
+            return 'Failed... Command format: github create_pr [repo] [base_branch] [feature_branch]' if arguments.length != 3
+            repo_name = arguments[0]
+            base = arguments[1]
+            branch = arguments[2]
+            # Here you would make calls to your ticket/issue tracker and set the perfomated title and body
+            title = "PR for #{branch}"
+            body = "This PR does very nice things and here's the link to the issue it solves"
+            @github_client.create_pr(repo_name, base, branch, title, body)
+          when 'merge_pr'
+            return 'Failed... Command format: github merge_pr [repo] [pull_request_id]' if arguments.length != 2
+            repo_name = arguments[0]
+            pr_number = arguments[1]
+            @github_client.merge_pr(repo_name, pr_number)
+          when 'close_pr'
+            return 'Failed... Command format: github close_pr [repo] [pull_request_id]' if arguments.length != 2
+            repo_name = arguments[0]
+            pr_number = arguments[1]
+            @github_client.close_pr(repo_name, pr_number)
           else
             "Yeah... you know... I didn't get what you want, sorry about that"
           end
